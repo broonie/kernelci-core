@@ -1,0 +1,132 @@
+# Minimum architecture defconfigs
+arch_defconfigs: &arch_defconfigs
+  arc: &arc_defconfig
+    base_defconfig: 'haps_hs_smp_defconfig'
+    filters:
+      - regex: { defconfig: 'haps_hs_smp_defconfig' }
+  arm: &arm_defconfig
+    base_defconfig: 'multi_v7_defconfig'
+    filters:
+      - regex: { defconfig: 'multi_v7_defconfig' }
+  arm64: &arm64_defconfig
+    base_defconfig: 'defconfig'
+    filters:
+      - regex: { defconfig: 'defconfig' }
+  i386: &i386_defconfig
+    base_defconfig: 'i386_defconfig'
+    filters:
+      - regex: { defconfig: 'i386_defconfig' }
+  mips: &mips_defconfig
+    base_defconfig: '32r2el_defconfig'
+    filters:
+      - regex: { defconfig: '32r2el_defconfig' }
+  riscv: &riscv_defconfig
+    base_defconfig: 'defconfig'
+    filters:
+      - regex: { defconfig: 'defconfig' }
+      - blocklist: { kernel: ['v3.', 'v4.4', 'v4.9', 'v4.14'] }
+  x86_64: &x86_64_defconfig
+    base_defconfig: 'x86_64_defconfig'
+    filters:
+      - regex: { defconfig: 'x86_64_defconfig' }
+
+
+# Staging build configurations using GCC
+staging-gcc-10: &staging-gcc-10
+  build_environment: gcc-10
+  fragments: [kselftest]
+  architectures:
+    arc: *arc_defconfig
+    arm:
+      <<: *arm_defconfig
+      fragments: [crypto]
+    arm64:
+      <<: *arm64_defconfig
+      fragments: [arm64-chromebook, crypto, preempt_rt]
+      extra_configs:
+        - 'defconfig+arm64-chromebook+crypto'
+        - 'defconfig+arm64-chromebook+kselftest'
+        - 'defconfig+arm64-chromebook+preempt_rt'
+    i386: *i386_defconfig
+    mips: *mips_defconfig
+    riscv: *riscv_defconfig
+    x86_64: &x86_64_defconfig-staging
+      <<: *x86_64_defconfig
+      fragments: [amdgpu, crypto, ima, preempt_rt, x86-chromebook]
+      extra_configs:
+        - 'x86_64_defconfig+x86-chromebook+amdgpu'
+        - 'x86_64_defconfig+x86-chromebook+crypto'
+        - 'x86_64_defconfig+x86-chromebook+ima'
+        - 'x86_64_defconfig+x86-chromebook+kselftest'
+        - 'x86_64_defconfig+x86-chromebook+preempt_rt'
+
+
+# Staging build configurations using LLVM/Clang
+staging-clang-11: &staging-clang-11
+  build_environment: clang-11
+  fragments: [kselftest]
+  architectures:
+    arm: *arm_defconfig
+    arm64: *arm64_defconfig
+    x86_64: *x86_64_defconfig-staging
+
+
+build_configs:
+
+  kernelci_staging-android:
+    tree: kernelci
+    branch: 'staging-android'
+    variants:
+      gcc-10: *staging-gcc-10
+      clang-15:
+        <<: *staging-clang-11
+        build_environment: clang-15
+
+  kernelci_staging-cip:
+    tree: kernelci
+    branch: 'staging-cip'
+    variants:
+      gcc-10: *staging-gcc-10
+
+  kernelci_staging-mainline:
+    tree: kernelci
+    branch: 'staging-mainline'
+    variants:
+      gcc-10: *staging-gcc-10
+      clang-11: *staging-clang-11
+
+  kernelci_staging-next:
+    tree: kernelci
+    branch: 'staging-next'
+    variants:
+      gcc-10: *staging-gcc-10
+      clang-15:
+        <<: *staging-clang-11
+        build_environment: clang-15
+
+  kernelci_staging-stable:
+    tree: kernelci
+    branch: 'staging-stable'
+    variants:
+      gcc-10:
+        build_environment: gcc-10
+        architectures:
+          arc: *arc_defconfig
+          arm:
+            <<: *arm_defconfig
+            fragments: [crypto]
+          arm64:
+            <<: *arm64_defconfig
+            fragments: [arm64-chromebook, crypto]
+            extra_configs:
+              - 'defconfig+arm64-chromebook+crypto'
+          i386: *i386_defconfig
+          mips: *mips_defconfig
+          riscv: *riscv_defconfig
+          x86_64:
+            <<: *x86_64_defconfig
+            fragments: [amdgpu, crypto, ima, x86-chromebook]
+            extra_configs:
+              - 'x86_64_defconfig+x86-chromebook+amdgpu'
+              - 'x86_64_defconfig+x86-chromebook+crypto'
+              - 'x86_64_defconfig+x86-chromebook+ima'
