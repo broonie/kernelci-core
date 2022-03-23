@@ -953,6 +953,13 @@ device_types:
       - blocklist: *device_config_filter
       - blocklist: {defconfig: ['multi_v7_defconfig+kselftest']}
 
+  juno-r0-acpi:
+    mach: sbsa
+    arch: arm64
+    boot_method: grub
+    filters:
+      - passlist: {defconfig: ['defconfig']}
+
   kirkwood-db-88f6282:
     mach: mvebu
     class: arm-dtb
@@ -2167,6 +2174,23 @@ test_configs:
     test_plans:
       - baseline
       - baseline-nfs
+
+  - device_type: juno-r0-acpi
+    test_plans:
+      - baseline
+      - baseline-nfs
+      - kselftest-futex
+      - kselftest-lib
+      - kselftest-lkdtm
+      - kselftest-rtc
+      - kselftest-seccomp
+      - ltp-crypto
+      - ltp-fcntl-locktests
+      - ltp-ima
+      - ltp-ipc
+      - ltp-mm
+      - ltp-pty
+      - ltp-timers
 
   - device_type: kirkwood-db-88f6282
     test_plans:
