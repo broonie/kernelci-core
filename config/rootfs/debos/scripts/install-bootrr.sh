@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/sh -x
 
-BOOTRR_SITE=https://github.com/kernelci/bootrr.git
-BOOTRR_VERSION=3ae9fd5dffc667fa96012892ea08532bc6877276
+BOOTRR_SITE=https://github.com/broonie/bootrr.git
+BOOTRR_VERSION=origin/broonie
 
 BUILD_DEPS="\
     build-essential \
