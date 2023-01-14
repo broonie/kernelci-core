@@ -197,15 +197,16 @@ rootfs_configs:
     script: "scripts/bullseye-igt.sh"
     test_overlay: "overlays/igt"
 
-  bullseye-kselftest:
+  testing-kselftest:
     rootfs_type: debos
-    debian_release: bullseye
+    debian_release: testing
     arch_list:
       - amd64
       - arm64
       - armel
       - armhf
     extra_packages:
+      - alsa-utils
       - bc
       - ca-certificates
       - iproute2
@@ -221,13 +222,13 @@ rootfs_configs:
       - libnuma1
       - libpam-cap
       - libpcre2-8-0
-      - libperl5.32
+      - libperl5.36
       - libpsl5
       - libxtables12
       - netbase
       - openssl
       - perl
-      - perl-modules-5.32
+      - perl-modules-5.36
       - procps
       - publicsuffix
       - python3-minimal
@@ -235,6 +236,9 @@ rootfs_configs:
       - tpm2-tools
       - wget
       - xz-utils
+    script: "scripts/install-bootrr.sh"
+    test_overlay: "overlays/baseline"
+    debos_scratchsize: "25G"
 
   bullseye-libcamera:
     rootfs_type: debos
